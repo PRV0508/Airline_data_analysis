@@ -1,0 +1,74 @@
+Code of the project : airlines data analysis 
+
+1) first step is to upload the data to the hdfs. This command use to put data from local file system to hdfs.
+
+Command : hdfs dfs -put /home/prateek/Downloads/flight-delays/flights.csv /home
+
+2) then we create table for storing the dataset.table has 31 colomns. Table is going to handle to million row of data.
+
+Command : 
+
+CREATE TABLE Flights(day_of_year int, origin String, dest String,scheduled_depart Float,depart_delay double, schedul_time Float, distance int,schedule_arrival Float, arrival_delay double, diverted int, cancelled int,dow2 int,dow3 int,dow4 int,dow5 int, dow6 int,dow7 int,airline_as int,airline_b6 int,airline_dl int,airline_ev int,airline_f9 int,airline_ha int,airline_mq int,airline_nk int,airline_oo int,airline_ua int,airline_us int,airline_vx int,airline_wn int,aircraft_late int,bad_wheather int,security int,arrival_delay_bn int) 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ',' ;
+
+3) we can check schema of out table by using the commaned : DESCRIBE Flights ; 
+
+4) Now we need to import datafile flight.csv which is stored in hdfs into table that we have just created.
+
+command: LOAD DATA INPATH 'hdfs:/home/flights.csv' INTO TABLE Flights;
+
+Problem statement 1 :
+show the 5 day of the year on which maximum flights get cancelled due to bad weather : 
+commands :  
+
+select day_of_year,COUNT(cancelled) as t FROM Flights
+WHERE cancelled = 1 AND bad_wheather=1
+GROUP BY day_of_year
+ORDER BY DESC
+LIMIT 5;
+
+Problem statement 2:
+Top 10 routes that have seen maximum number of diversions 
+commands : 
+
+select origin,dest,COUNT(diverted) as t FROM Flights
+WHERE diverted=1
+GROUP BY origin,dest
+ORDER BY t DESC
+LIMIT 10;
+
+
+Problem statement 3:
+Top 5 visited destination
+command : 
+
+select dest,COUNT(dest) as x FROM Flights
+GROUP BY dest
+ORDER BY x DESC
+LIMIT 5;
+
+
+Problem statement 4:
+Top 10 maximum distance flights that get cancelled due to bad weather : 
+command : 
+
+select origin,dest,MAX(distance) as q FROM Flights
+WHERE cancelled=1 AND bad_wheather=1
+GROUP BY origin, dest
+ORDER BY q DESC
+LIMIT 10;
+
+Problem statement 5 : 
+Top 10 maximum distance flights can get cancelled due to security reasons : 
+commands : 
+
+select origin,dest,MAX(distance) as q FROM Flights
+WHERE cancelled=1 AND security=1
+GROUP BY origin, dest
+ORDER BY q DESC
+LIMIT 10;
+
+
+
+
+
